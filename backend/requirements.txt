@@ -1,0 +1,52 @@
+# =========================
+# Core API
+# =========================
+fastapi
+uvicorn
+uvicorn
+
+
+# =========================
+# LLM + AI utilities
+# =========================
+transformers
+sentence-transformers
+torch
+
+# =========================
+# RAG & Vector DB
+# =========================
+faiss-cpu
+chromadb
+
+# =========================
+# OCR
+# =========================
+pytesseract
+Pillow
+opencv-python
+
+# =========================
+# ASR (Audio)
+# =========================
+openai-whisper
+ffmpeg-python
+
+# =========================
+# Math & Tools
+# =========================
+sympy
+numpy
+scipy
+
+# =========================
+# Data & Memory
+# =========================
+pydantic
+python-dotenv
+
+# =========================
+# Utilities
+# =========================
+loguru
+tqdm
