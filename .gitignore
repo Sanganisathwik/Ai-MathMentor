@@ -1,0 +1,38 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Data and Logs
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
+backend/data/memory_logs/*
+!backend/data/memory_logs/.gitkeep
+server_log.txt
+*.log
+
+# Vector Store
+backend/data/vector_store/*
+!backend/data/vector_store/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store

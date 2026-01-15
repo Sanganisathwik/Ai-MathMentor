@@ -1,130 +1,100 @@
-from typing import Dict, Any
-import sympy as sp
-
+import re
+import json
+from typing import Dict, Any, Optional
+from backend.llm.groq_client import call_groq
 
 class SolverAgent:
     """
-    Solves math problems using symbolic computation (SymPy).
+    JEE-level math solver with strict prompt discipline and HITL triggers.
     """
 
-    def solve(self, parsed_problem: Dict, route_plan: Dict) -> Dict[str, Any]:
-        topic = parsed_problem["topic"]
-        text = parsed_problem["problem_text"]
-        variables = parsed_problem["variables"]
+    def solve(self, parsed_problem: Dict, route_plan: Dict, rag_context: Optional[Dict] = None) -> Dict[str, Any]:
+        problem_text = parsed_problem.get("problem_text", "No problem provided.")
+        topic = parsed_problem.get("topic", "general math")
+        
+        context_str = ""
+        if rag_context and rag_context.get("results"):
+            context_str = "\nAvailable Verified Formulas:\n" + "\n".join([f"- {r['content']}" for r in rag_context["results"]])
 
-        try:
-            if topic == "algebra":
-                return self._solve_algebra(text, variables)
+        prompt = f"""You are a highly accurate JEE-level mathematics tutor.
 
-            elif topic == "calculus":
-                return self._solve_calculus(text, variables)
+NON-NEGOTIABLE RULES:
+- Do NOT guess.
+- Do NOT skip steps.
+- Do NOT invent formulas.
+- If you are unsure at ANY point, explicitly say so.
+- Mathematical correctness is more important than fluency.
+- If a mistake is possible, request human verification.
+- You must strictly follow the requested output format.
 
-            elif topic == "probability":
-                return self._solve_probability(text)
+Problem:
+{problem_text}
+{context_str}
 
-            else:
-                return {
-                    "status": "unsupported",
-                    "message": f"No solver available for topic: {topic}",
-                    "confidence": 0.0
-                }
+Output FORMAT (DO NOT CHANGE):
 
-        except Exception as e:
-            return {
-                "status": "error",
-                "message": str(e),
-                "confidence": 0.0
-            }
+TOPIC:
+<algebra / calculus / probability / linear algebra>
 
-    # -------------------------
-    # ALGEBRA SOLVER
-    # -------------------------
-    def _solve_algebra(self, text: str, variables: list) -> Dict[str, Any]:
-        if "=" not in text:
-            return {
-                "status": "needs_clarification",
-                "message": "Equation missing '='",
-                "confidence": 0.0
-            }
+APPROACH:
+<brief plan of how the problem will be solved>
 
-        lhs, rhs = text.split("=")
+FORMULAS USED:
+- Formula 1
+- Formula 2
 
-        var = sp.symbols(variables[0])
-        lhs_expr = sp.sympify(lhs.replace("^", "**"))
-        rhs_expr = sp.sympify(rhs.replace("^", "**"))
+STEP-BY-STEP SOLUTION:
+Step 1: ...
+Step 2: ...
+Step 3: ...
 
-        equation = sp.Eq(lhs_expr, rhs_expr)
-        solution = sp.solve(equation, var)
+FINAL ANSWER:
+<clear final answer>
 
-        return {
-            "status": "solved",
-            "answer": solution,
-            "equation": str(equation),
-            "confidence": 0.95
-        }
+SELF-CHECK:
+- Domain checked: YES / NO
+- Any assumptions made: NONE / <list>
+- Confidence (0–1): <number>
 
-    # -------------------------
-    # CALCULUS SOLVER
-    # -------------------------
-    def _solve_calculus(self, text: str, variables: list) -> Dict[str, Any]:
-        var = sp.symbols(variables[0])
+If Confidence < 0.85, write exactly:
+"HUMAN REVIEW REQUIRED"
+"""
 
-        if "derivative" in text:
-            expr = self._extract_expression(text)
-            derivative = sp.diff(expr, var)
+        llm_output = call_groq(prompt)
 
-            return {
-                "status": "solved",
-                "answer": str(derivative),
-                "operation": "derivative",
-                "confidence": 0.9
-            }
+        # Robust Parsing
+        def extract_section(text, header):
+            # Matches header until next uppercase header or end of string
+            pattern = rf"{header}:?\s*(.*?)(?=\n[A-Z\s_]+:|(\*\*|#)*[A-Z\s_]+:|(\*\*|#)*\w+\s?[\w\s]*:|(\s*\d+\.\s*)|$)"
+            match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+            return match.group(1).strip() if match else ""
 
-        if "limit" in text and "->" in text:
-            expr, limit_value = self._extract_limit(text)
-            limit_result = sp.limit(expr, var, limit_value)
+        parsed_topic = extract_section(llm_output, "TOPIC")
+        approach = extract_section(llm_output, "APPROACH")
+        formulas = extract_section(llm_output, "FORMULAS USED")
+        steps = extract_section(llm_output, "STEP-BY-STEP SOLUTION")
+        final_answer = extract_section(llm_output, "FINAL ANSWER")
+        self_check = extract_section(llm_output, "SELF-CHECK")
 
-            return {
-                "status": "solved",
-                "answer": str(limit_result),
-                "operation": "limit",
-                "confidence": 0.9
-            }
+        # Confidence extraction
+        confidence = 1.0
+        conf_match = re.search(r"Confidence\s*\(0?–1\):\s*([\d.]+)", self_check)
+        if conf_match:
+            try:
+                confidence = float(conf_match.group(1))
+            except:
+                pass
+
+        needs_hitl = "HUMAN REVIEW REQUIRED" in llm_output or confidence < 0.85
 
         return {
-            "status": "needs_clarification",
-            "message": "Unsupported calculus operation",
-            "confidence": 0.0
+            "raw_output": llm_output,
+            "topic": parsed_topic,
+            "approach": approach,
+            "formulas": formulas,
+            "reasoning": steps,
+            "answer": final_answer,
+            "confidence": confidence,
+            "needs_human_review": needs_hitl,
+            "status": "solved" if final_answer else "failed"
         }
-
-    # -------------------------
-    # PROBABILITY SOLVER
-    # -------------------------
-    def _solve_probability(self, text: str) -> Dict[str, Any]:
-        if "coin" in text and "head" in text:
-            return {
-                "status": "solved",
-                "answer": "1/2",
-                "explanation": "A fair coin has equal probability for head and tail.",
-                "confidence": 0.8
-            }
-
-        return {
-            "status": "needs_clarification",
-            "message": "Probability problem too generic",
-            "confidence": 0.3
-        }
-
-    # -------------------------
-    # HELPERS
-    # -------------------------
-    def _extract_expression(self, text: str):
-        expr_text = text.split("of")[-1]
-        expr_text = expr_text.replace("^", "**")
-        return sp.sympify(expr_text)
-
-    def _extract_limit(self, text: str):
-        parts = text.split("->")
-        limit_value = float(parts[-1].strip())
-        expr = sp.symbols("x")
-        return expr, limit_value

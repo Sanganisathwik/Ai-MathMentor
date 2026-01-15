@@ -7,7 +7,27 @@ def solve_problem(text: str):
     response = requests.post(
         f"{BACKEND_URL}/solve",
         json={"text": text},
-        timeout=30
+        timeout=300
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def process_image(file):
+    response = requests.post(
+        f"{BACKEND_URL}/solve/image",
+        files={"file": file},
+        timeout=300
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def process_audio(file):
+    response = requests.post(
+        f"{BACKEND_URL}/solve/audio",
+        files={"file": file},
+        timeout=300
     )
     response.raise_for_status()
     return response.json()

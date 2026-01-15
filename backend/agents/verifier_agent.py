@@ -1,98 +1,62 @@
-from typing import Dict, Any
-import sympy as sp
-
+import json
+from backend.llm.groq_client import call_groq
 
 class VerifierAgent:
     """
-    Verifies correctness of solver output and decides HITL.
+    Strict JEE mathematics verifier that returns structured analysis.
     """
+    def verify(self, parsed_problem: dict, solver_output: dict) -> dict:
+        problem_text = parsed_problem.get("problem_text", "")
+        raw_solver_output = solver_output.get("raw_output", "")
 
-    def verify(self, parsed_problem: Dict, solver_output: Dict) -> Dict[str, Any]:
-        if solver_output.get("status") != "solved":
-            return {
-                "verified": False,
-                "needs_human_review": True,
-                "confidence": 0.0,
-                "notes": "Solver did not produce a valid solution"
-            }
+        prompt = f"""You are a strict JEE mathematics verifier.
 
-        topic = parsed_problem["topic"]
+Your job is to FIND ERRORS.
 
-        if topic == "algebra":
-            return self._verify_algebra(parsed_problem, solver_output)
+Check:
+- Formula correctness
+- Logical flow
+- Domain restrictions
+- Final answer validity
 
-        if topic == "calculus":
-            return {
-                "verified": True,
-                "final_answer": solver_output["answer"],
-                "confidence": 0.9,
-                "needs_human_review": False,
-                "notes": "Symbolic calculus verified"
-            }
+Original Problem:
+{problem_text}
 
-        if topic == "probability":
-            return {
-                "verified": True,
-                "final_answer": solver_output["answer"],
-                "confidence": solver_output.get("confidence", 0.7),
-                "needs_human_review": False,
-                "notes": "Probability answer accepted"
-            }
+Solver Output:
+{raw_solver_output}
 
-        return {
-            "verified": False,
-            "needs_human_review": True,
-            "confidence": 0.0,
-            "notes": "Unknown topic"
-        }
+Output ONLY JSON (NO EXTRA TEXT):
 
-    # -------------------------
-    # ALGEBRA VERIFICATION
-    # -------------------------
-    def _verify_algebra(self, parsed_problem: Dict, solver_output: Dict) -> Dict[str, Any]:
-        solutions = solver_output.get("answer")
-        equation_str = solver_output.get("equation")
+{{
+  "verified": true | false,
+  "confidence": 0.0-1.0,
+  "errors_found": ["..."],
+  "needs_human_review": true | false
+}}
 
-        if not solutions or not equation_str:
-            return {
-                "verified": False,
-                "needs_human_review": True,
-                "confidence": 0.0,
-                "notes": "Missing equation or solutions"
-            }
+RULES:
+- If ANY step is unjustified → verified = false
+- If confidence < 0.9 → needs_human_review = true
+"""
 
+        response = call_groq(prompt)
+        
         try:
-            # Eq(x**2 - 5*x + 6, 0)
-            inner = equation_str.replace("Eq(", "").rstrip(")")
-            lhs_str, rhs_str = inner.split(",")
-
-            lhs = sp.sympify(lhs_str.strip())
-            rhs = sp.sympify(rhs_str.strip())
-
-            var = list(lhs.free_symbols)[0]
-
-            # Verify each solution by substitution
-            for sol in solutions:
-                if lhs.subs(var, sol) != rhs.subs(var, sol):
-                    return {
-                        "verified": False,
-                        "needs_human_review": True,
-                        "confidence": 0.3,
-                        "notes": f"Solution {sol} does not satisfy equation"
-                    }
-
-            return {
-                "verified": True,
-                "final_answer": solutions,
-                "confidence": 0.97,
-                "needs_human_review": False,
-                "notes": "All solutions verified by substitution"
-            }
-
+            # Clean response of any markdown code blocks if necessary
+            clean_json = response.strip().replace("```json", "").replace("```", "").strip()
+            result = json.loads(clean_json)
+            
+            # Ensure required keys exist
+            if "verified" not in result: result["verified"] = False
+            if "confidence" not in result: result["confidence"] = 0.5
+            if "needs_human_review" not in result: result["needs_human_review"] = True
+            
+            return result
         except Exception as e:
+            # Fallback for parsing error
             return {
                 "verified": False,
-                "needs_human_review": True,
                 "confidence": 0.0,
-                "notes": str(e)
+                "errors_found": [f"Verification Parsing Error: {str(e)}", f"Raw response: {response[:100]}"],
+                "needs_human_review": True
             }

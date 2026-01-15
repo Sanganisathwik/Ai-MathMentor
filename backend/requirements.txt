@@ -3,6 +3,7 @@
 # =========================
 fastapi
 uvicorn
+python-multipart
 uvicorn
 
 
@@ -50,3 +51,9 @@ python-dotenv
 # =========================
 loguru
 tqdm
+# =========================
+# Multi-Agent Orchestration
+# =========================
+langgraph
+groq
+streamlit-audiorecorder

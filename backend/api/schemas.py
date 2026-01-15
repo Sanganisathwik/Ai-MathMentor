@@ -61,6 +61,7 @@ class RetrievedChunk(BaseModel):
 class SolutionResponse(BaseModel):
     final_answer: Optional[str]
     explanation: List[str]
+    explanation_md: Optional[str] = None
     confidence: float
     retrieved_context: List[RetrievedChunk]
     agent_trace: List[str]

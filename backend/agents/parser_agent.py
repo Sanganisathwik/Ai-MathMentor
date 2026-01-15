@@ -36,6 +36,7 @@ class ParserAgent:
     # TEXT CLEANING
     # -------------------------
     def _clean_text(self, text: str) -> str:
+        # Keep it lowercase for consistency, but be less aggressive with stripping
         text = text.lower()
 
         replacements = {
@@ -52,7 +53,9 @@ class ParserAgent:
         for k, v in replacements.items():
             text = text.replace(k, v)
 
-        text = re.sub(r"[^a-z0-9=^+\-*/().<> ]", "", text)
+        # Allow more symbols: ^, _, {, }, \, and others for LaTeX/complex math
+        # Allow symbols like: \sqrt, \alpha, etc.
+        text = re.sub(r"[^a-z0-9=^+\-*/().<>\\_{}\[\] ]", "", text)
         text = re.sub(r"\s+", " ", text).strip()
         return text
 

@@ -1,98 +1,48 @@
-from typing import Dict, Any, List
-
+from backend.llm.groq_client import call_groq
 
 class ExplainerAgent:
     """
-    Converts verified solutions into step-by-step explanations.
+    JEE mathematics tutor that generates student-friendly explanations.
     """
+    def explain(self, parsed_problem: dict, solver_output: dict, verifier_output: dict) -> dict:
+        problem_text = parsed_problem.get("problem_text", "")
+        # Combine solver and verifier info for a complete context
+        context = f"Problem: {problem_text}\nSolver Output: {solver_output.get('raw_output', '')}\nVerification: {verifier_output}"
 
-    def explain(
-        self,
-        parsed_problem: Dict,
-        solver_output: Dict,
-        verifier_output: Dict
-    ) -> Dict[str, Any]:
+        prompt = f"""You are a JEE mathematics tutor.
 
-        if not verifier_output.get("verified"):
-            return {
-                "final_answer": None,
-                "explanation": [
-                    "The solution could not be verified with confidence.",
-                    "A human review is required before explanation."
-                ]
-            }
+Rewrite the solution below into:
+- Clear
+- Exam-oriented
+- Beginner-friendly steps
 
-        topic = parsed_problem["topic"]
+Rules:
+- Explain WHY each step is taken
+- Avoid unnecessary jargon
+- Use Markdown formatting
+- End with the final answer clearly
 
-        if topic == "algebra":
-            return self._explain_algebra(parsed_problem, solver_output)
+Verified Solution Context:
+{context}
 
-        if topic == "calculus":
-            return self._explain_calculus(parsed_problem, solver_output)
+Output FORMAT:
 
-        if topic == "probability":
-            return self._explain_probability(parsed_problem, solver_output)
+### Step-by-Step Explanation
+Step 1: ...
+Step 2: ...
+Step 3: ...
 
-        return {
-            "final_answer": solver_output.get("answer"),
-            "explanation": ["Explanation not available for this topic."]
-        }
+### Final Answer
+...
+"""
 
-    # -------------------------
-    # ALGEBRA EXPLANATION
-    # -------------------------
-    def _explain_algebra(self, parsed_problem: Dict, solver_output: Dict) -> Dict[str, Any]:
-        equation = solver_output.get("equation")
-        solutions = solver_output.get("answer")
+        explanation_raw = call_groq(prompt)
 
-        steps: List[str] = []
-
-        steps.append(f"Given equation: {equation.replace('Eq', '').strip()}")
-        steps.append("This is a quadratic equation.")
-        steps.append("We factorize the quadratic expression.")
-        steps.append("Set each factor equal to zero.")
-
-        for sol in solutions:
-            steps.append(f"Solving gives x = {sol}")
-
-        final_answer = "x = " + ", ".join(str(sol) for sol in solutions)
+        # Split steps for UI list if possible, or just return the text
+        lines = [line.strip() for line in explanation_raw.split("\n") if line.strip()]
 
         return {
-            "final_answer": final_answer,
-            "explanation": steps
-        }
-
-    # -------------------------
-    # CALCULUS EXPLANATION
-    # -------------------------
-    def _explain_calculus(self, parsed_problem: Dict, solver_output: Dict) -> Dict[str, Any]:
-        operation = solver_output.get("operation")
-        answer = solver_output.get("answer")
-
-        steps = [
-            f"The problem involves finding a {operation}.",
-            "We apply standard calculus rules.",
-            f"The resulting expression is {answer}."
-        ]
-
-        return {
-            "final_answer": answer,
-            "explanation": steps
-        }
-
-    # -------------------------
-    # PROBABILITY EXPLANATION
-    # -------------------------
-    def _explain_probability(self, parsed_problem: Dict, solver_output: Dict) -> Dict[str, Any]:
-        answer = solver_output.get("answer")
-
-        steps = [
-            "A fair coin has two equally likely outcomes: Head and Tail.",
-            "The probability of getting a head is the number of favorable outcomes divided by total outcomes.",
-            "Therefore, the probability is 1/2."
-        ]
-
-        return {
-            "final_answer": answer,
-            "explanation": steps
+            "final_answer": solver_output.get("answer", "No answer found."),
+            "explanation": lines,
+            "explanation_md": explanation_raw
         }
