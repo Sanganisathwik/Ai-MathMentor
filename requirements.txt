@@ -1,59 +1,49 @@
 # =========================
-# Core API
+# Core API & Web
 # =========================
 fastapi
 uvicorn
 python-multipart
-uvicorn
-
-
-# =========================
-# LLM + AI utilities
-# =========================
-transformers
-sentence-transformers
-torch
+streamlit
+requests
 
 # =========================
-# RAG & Vector DB
+# LLM & Multi-Agent
 # =========================
-faiss-cpu
-chromadb
+groq
+langgraph
+python-dotenv
 
 # =========================
-# OCR
+# AI Utilities (OCR & ASR)
 # =========================
 pytesseract
 Pillow
 opencv-python
-
-# =========================
-# ASR (Audio)
-# =========================
 openai-whisper
+streamlit-audiorecorder
 ffmpeg-python
+pydub
 
 # =========================
-# Math & Tools
+# AI Core (Lazy loaded)
+# =========================
+transformers
+sentence-transformers
+torch
+faiss-cpu
+chromadb
+
+# =========================
+# Math & Processing
 # =========================
 sympy
 numpy
 scipy
-
-# =========================
-# Data & Memory
-# =========================
 pydantic
-python-dotenv
 
 # =========================
 # Utilities
 # =========================
 loguru
 tqdm
-# =========================
-# Multi-Agent Orchestration
-# =========================
-langgraph
-groq
-streamlit-audiorecorder
