@@ -1043,8 +1043,9 @@ MIT License - see [LICENSE](LICENSE)
 ## 👨‍💻 Author
 
 **Sathwik Sangani**  
-[![GitHub](https://img.shields.io/badge/GitHub-Sanganisathwik-black?logo=github)
-[![Email](https://img.shields.io/badge/Email-sanganisathwik26%40gmail.com-red?logo=gmail)]
+[![GitHub](https://img.shields.io/badge/GitHub-Sanganisathwik-black?logo=github)](https://github.com/Sanganisathwik)
+[![Email](https://img.shields.io/badge/Email-sanganisathwik26%40gmail.com-red?logo=gmail)](mailto:sanganisathwik26@gmail.com)
+
 
 ---
 
