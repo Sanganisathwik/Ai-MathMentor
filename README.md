@@ -704,13 +704,12 @@ Built on **LangGraph**, the system orchestrates specialized agents:
 ```
 
 ### 🧠 Advanced LLM Integration
-- **Model**:  Llama 3.3 70B Versatile via Groq Cloud
+- **Model**:   Groq Cloud
 - **Prompt Engineering**: Structured output with self-checking
 - **Temperature**:  0 for deterministic mathematical reasoning
 - **Context Window**: 4096 tokens for complex problems
 
 ### 📚 RAG-Enhanced Knowledge Retrieval
-- Curated knowledge base for Algebra, Calculus, Probability
 - Similarity-based context injection
 - Source attribution in explanations
 
@@ -891,29 +890,6 @@ Solve a math problem from text input.
 {
   "text": "Solve the equation 2x + 5 = 15"
 }
-```
-
-**Response:**
-```json
-{
-  "final_answer": "x = 5",
-  "explanation": [
-    "Step 1: Subtract 5 from both sides:  2x = 10",
-    "Step 2: Divide both sides by 2: x = 5"
-  ],
-  "explanation_md": "### Step-by-Step Solution\n.. .",
-  "confidence": 0.95,
-  "retrieved_context": [
-    {
-      "source": "algebra.md",
-      "content": "Linear equations:  ax + b = c.. .",
-      "score": 0.87
-    }
-  ],
-  "agent_trace": ["ParserAgent", "IntentRouterAgent", "MultiRAG", "SolverAgent", "VerifierAgent", "ExplainerAgent"],
-  "needs_human_review": false
-}
-```
 
 #### `POST /solve/image`
 Solve from uploaded image (OCR).
@@ -933,7 +909,7 @@ Solve from uploaded image (OCR).
 Solve from uploaded audio (ASR).
 
 **Request:**
-- Form-data: `file` (audio file - WAV/MP3/M4A)
+- Form-data: `file` (audio file - WAV/MP3/M4A/MP4)
 
 **Response:**
 ```json
@@ -1022,7 +998,6 @@ python -m backend. rag.ingest
 | **ASR Accuracy** | WER < 5% (clear audio) |
 | **RAG Retrieval** | <100ms (TF-IDF) |
 | **HITL Trigger Rate** | ~12% (confidence < 0.85) |
-| **Supported Topics** | Algebra, Calculus, Probability, Linear Algebra |
 
 ---
 
@@ -1060,7 +1035,6 @@ MIT License - see [LICENSE](LICENSE)
 
 - **Groq Cloud** - Ultra-fast LLM inference
 - **LangChain/LangGraph** - Agentic workflow orchestration
-- **Meta AI** - Llama 3.3 70B model
 - **OpenAI** - Whisper ASR model
 - **Tesseract** - OCR engine
 
@@ -1069,8 +1043,8 @@ MIT License - see [LICENSE](LICENSE)
 ## 👨‍💻 Author
 
 **Sathwik Sangani**  
-[![GitHub](https://img.shields.io/badge/GitHub-Sanganisathwik-black?logo=github)](https://github.com/Sanganisathwik)
-[![Email](https://img.shields.io/badge/Email-sanganisathwik26%40gmail.com-red?logo=gmail)](mailto:sanganisathwik26@gmail.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Sanganisathwik-black?logo=github)
+[![Email](https://img.shields.io/badge/Email-sanganisathwik26%40gmail.com-red?logo=gmail)]
 
 ---
 
