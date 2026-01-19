@@ -19,24 +19,24 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **Math Mentor AI** is a production-grade, multimodal mathematics tutoring system designed specifically for JEE (Joint Entrance Examination) preparation. It combines state-of-the-art LLMs, multi-agent orchestration, and retrieval-augmented generation (RAG) to provide reliable, step-by-step solutions with human-in-the-loop verification.
 
 ### Why Math Mentor? 
 
-- ✅ **Reliable**: Self-verification with confidence scoring triggers human review when needed
-- 🎓 **Educational**: Step-by-step explanations tailored for exam preparation
-- 🔍 **Transparent**: Full agent trace and knowledge source attribution
-- 🎙️ **Multimodal**: Accepts text, images (OCR), and voice (ASR) inputs
-- ⚡ **Fast**:  Powered by Groq Cloud for sub-second inference
-- 📚 **Context-Aware**: RAG-enhanced with curated mathematics knowledge base
+-  **Reliable**: Self-verification with confidence scoring triggers human review when needed
+-  **Educational**: Step-by-step explanations tailored for exam preparation
+-  **Transparent**: Full agent trace and knowledge source attribution
+-  **Multimodal**: Accepts text, images (OCR), and voice (ASR) inputs
+-  **Fast**:  Powered by Groq Cloud for sub-second inference
+-  **Context-Aware**: RAG-enhanced with curated mathematics knowledge base
 
 ---
 
-## 🛠️ Technology Stack & Integrations
+##  Technology Stack & Integrations
 
-### 🧠 Core AI & LLM Layer
+###  Core AI & LLM Layer
 
 #### 1. **Groq Cloud API** (Llama 3.3 70B Versatile)
 **Purpose**: Primary reasoning engine for mathematical problem-solving
@@ -62,10 +62,10 @@ def call_groq(prompt:  str) -> str:
 - ✅ `ExplainerAgent` - Generates step-by-step JEE-style explanations
 
 **Why Groq? **: 
-- ⚡ **Ultra-fast inference**: 300-500ms vs 2-3s for OpenAI GPT-4
-- 💰 **Cost-effective**: ~10x cheaper than GPT-4
-- 🎯 **Llama 3.3 70B**:  Excellent mathematical reasoning capabilities
-- 🔧 **Reliability**: Consistent structured outputs with temperature=0
+-  **Ultra-fast inference**: 300-500ms vs 2-3s for OpenAI GPT-4
+-  **Cost-effective**: ~10x cheaper than GPT-4
+-  **Llama 3.3 70B**:  Excellent mathematical reasoning capabilities
+-  **Reliability**: Consistent structured outputs with temperature=0
 
 **Key Features Utilized**:
 - Structured output parsing with strict format enforcement
@@ -116,10 +116,10 @@ class MathMentorState(TypedDict):
 ```
 
 **Why LangGraph?**:
-- 🔄 **Conditional branching**: Routes to HITL based on confidence
-- 💾 **State persistence**: MemorySaver enables conversational memory
-- 🔍 **Debuggability**: Full execution trace for transparency
-- 🔧 **Flexibility**: Easy to add/modify agent nodes
+-  **Conditional branching**: Routes to HITL based on confidence
+-  **State persistence**: MemorySaver enables conversational memory
+-  **Debuggability**: Full execution trace for transparency
+-  **Flexibility**: Easy to add/modify agent nodes
 
 **Key Features**:
 - Checkpointing with `thread_id` for user sessions
@@ -170,10 +170,10 @@ def solve_from_image(file: UploadFile = File(... )):
 4. **Confidence Calculation** - Per-word confidence aggregation
 
 **Why Tesseract?**:
-- 🆓 **Open-source**: No API costs
-- 🎯 **Accuracy**: 85-95% on printed text, 70-85% on handwritten
-- 🔧 **Customizable**: Trainable for mathematical symbols
-- 🌍 **Multi-language**: Supports mathematical notation
+-  **Open-source**: No API costs
+-  **Accuracy**: 85-95% on printed text, 70-85% on handwritten
+-  **Customizable**: Trainable for mathematical symbols
+-  **Multi-language**: Supports mathematical notation
 
 ---
 
@@ -221,10 +221,10 @@ if len(audio) > 0:
 ```
 
 **Why Whisper?**:
-- 🎯 **Accuracy**: State-of-the-art ASR (WER < 5%)
-- 🆓 **Local inference**: No external API calls
-- 🗣️ **Natural language**: Handles conversational math queries
-- 🌍 **Multilingual**: Supports 99 languages
+-  **Accuracy**: State-of-the-art ASR (WER < 5%)
+-  **Local inference**: No external API calls
+-  **Natural language**: Handles conversational math queries
+-  **Multilingual**: Supports 99 languages
 
 **Model Selection**:  `base` (74M) for balance of speed/accuracy
 
@@ -243,9 +243,9 @@ if not shutil.which("ffmpeg"):
 ```
 
 **Used For**:
-- 🔄 Format conversion (M4A/MP3/OGG → WAV)
-- 🎚️ Audio normalization and resampling
-- 📊 Metadata extraction
+-  Format conversion (M4A/MP3/OGG/MP4 → WAV)
+-  Audio normalization and resampling
+-  Metadata extraction
 
 **Why FFmpeg?**: 
 - Industry standard for audio/video processing
@@ -306,16 +306,16 @@ def multi_rag_retrieve(parsed_problem):
 ```
 
 **Why TF-IDF?**:
-- ⚡ **Fast**:  O(1) lookup with precomputed vectors
-- 🎯 **Effective**: Works well for keyword-heavy math content
-- 💾 **Lightweight**: No GPU required
-- 🔧 **Simple**: Easy to debug and maintain
+-  **Fast**:  O(1) lookup with precomputed vectors
+-  **Effective**: Works well for keyword-heavy math content
+-  **Lightweight**: No GPU required
+-  **Simple**: Easy to debug and maintain
 
 **Upgrade Path**:  Ready to migrate to sentence-transformers/FAISS
 
 ---
 
-### 🧮 Mathematical Computation
+###  Mathematical Computation
 
 #### 7. **SymPy** (Symbolic Mathematics)
 **Purpose**: Symbolic computation for algebra verification
@@ -351,7 +351,7 @@ solution = sp.solve(equation, var)
 
 ---
 
-### 🌐 Backend Infrastructure
+###  Backend Infrastructure
 
 #### 9. **FastAPI** (Web Framework)
 **Purpose**: High-performance REST API server
@@ -439,7 +439,7 @@ CONFIDENCE_THRESHOLD=0.85
 
 ---
 
-### 🖥️ Frontend Interface
+###  Frontend Interface
 
 #### 12. **Streamlit** (UI Framework)
 **Purpose**: Interactive web interface for users
@@ -496,13 +496,13 @@ if len(audio) > 0:
 ```
 
 **Why This Library?**:
-- 🎙️ Browser microphone access (no external app needed)
-- 📦 Returns AudioSegment (compatible with pydub/FFmpeg)
-- 🔧 Simple integration with Streamlit
+-  Browser microphone access (no external app needed)
+-  Returns AudioSegment (compatible with pydub/FFmpeg)
+-  Simple integration with Streamlit
 
 ---
 
-### 💾 Data & Memory
+###  Data & Memory
 
 #### 14. **JSON File Storage** (Memory System)
 **Purpose**: Session persistence and feedback storage
@@ -535,10 +535,10 @@ class MemoryStore:
 ```
 
 **Used For**:
-- 📝 Session history tracking
-- 🔄 Similar problem retrieval
-- 📊 Feedback analysis
-- 🎯 Future model fine-tuning
+-  Session history tracking
+-  Similar problem retrieval
+-  Feedback analysis
+-  Future model fine-tuning
 
 ---
 
@@ -688,7 +688,7 @@ denoised = cv2.fastNlMeansDenoising(thresh)
 
 ## ✨ Features
 
-### 🤖 Multi-Agent Architecture
+###  Multi-Agent Architecture
 Built on **LangGraph**, the system orchestrates specialized agents: 
 - **ParserAgent**: Normalizes inputs and detects mathematical topics
 - **RouterAgent**: Routes problems to appropriate solving strategies
@@ -696,31 +696,31 @@ Built on **LangGraph**, the system orchestrates specialized agents:
 - **VerifierAgent**:  Validates solutions with confidence scoring
 - **ExplainerAgent**:  Generates JEE-style step-by-step explanations
 
-### 🎤 Multimodal Input Support
+###  Multimodal Input Support
 ```
-📝 Text Input       → Direct problem entry
-🖼️ Image Input      → OCR with Tesseract
-🎙️ Audio Input      → ASR with OpenAI Whisper
+ Text Input       → Direct problem entry
+ Image Input      → OCR with Tesseract
+ Audio Input      → ASR with OpenAI Whisper
 ```
 
-### 🧠 Advanced LLM Integration
+###  Advanced LLM Integration
 - **Model**:   Groq Cloud
 - **Prompt Engineering**: Structured output with self-checking
 - **Temperature**:  0 for deterministic mathematical reasoning
 - **Context Window**: 4096 tokens for complex problems
 
-### 📚 RAG-Enhanced Knowledge Retrieval
+###  RAG-Enhanced Knowledge Retrieval
 - Similarity-based context injection
 - Source attribution in explanations
 
-### 🧑‍⚖️ Human-in-the-Loop (HITL)
+###  Human-in-the-Loop (HITL)
 - Automatic review trigger when confidence < 0.85
 - User feedback collection and memory storage
 - Iterative improvement from corrections
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -856,13 +856,13 @@ Input: "Solve x squared minus 5x plus 6 equals zero"
 
 Output:
 ✅ Final Answer: x = 2, x = 3
-📘 Step-by-Step Explanation: 
+ Step-by-Step Explanation: 
   1. Identify as quadratic equation:  x² - 5x + 6 = 0
   2. Factor the quadratic: (x - 2)(x - 3) = 0
   3. Apply zero product property
   4. Solutions: x = 2 or x = 3
-📊 Confidence: 97%
-🔍 Agent Trace: ParserAgent → RouterAgent → MultiRAG → SolverAgent → VerifierAgent → ExplainerAgent
+ Confidence: 97%
+ Agent Trace: ParserAgent → RouterAgent → MultiRAG → SolverAgent → VerifierAgent → ExplainerAgent
 ```
 
 #### 2. Image Input
@@ -948,7 +948,7 @@ Ai-MathMentor/
 
 ---
 
-## 🎨 Configuration
+##  Configuration
 
 ### Backend Settings (`backend/. env`)
 ```bash
@@ -988,7 +988,7 @@ python -m backend. rag.ingest
 
 ---
 
-## 📊 Performance
+##  Performance
 
 | Metric | Value |
 |--------|-------|
@@ -1001,7 +1001,7 @@ python -m backend. rag.ingest
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 ### Version 2.0 (Planned)
 - [ ] Upgrade to **sentence-transformers** (neural embeddings)
@@ -1016,28 +1016,6 @@ python -m backend. rag.ingest
 - [ ] Docker production deployment
 - [ ] API rate limiting
 - [ ] Redis caching for frequent problems
-
----
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
----
-
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE)
-
----
-
-## 🙏 Acknowledgments
-
-- **Groq Cloud** - Ultra-fast LLM inference
-- **LangChain/LangGraph** - Agentic workflow orchestration
-- **OpenAI** - Whisper ASR model
-- **Tesseract** - OCR engine
-
 ---
 
 ## 👨‍💻 Author
